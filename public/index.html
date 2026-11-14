@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ColdGuard Assistant · Qi Groceries</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0B2E4F;--navy2:#123B61;--teal:#1C8C9C;--orange:#E2622E;--ice:#E8F1F6;--ice2:#F4F8FB;--line:#D6E1E9;--text:#1A2733;--muted:#5B7A93;--red:#B42318;--redbg:#FDECEA;--amb:#8A5A00;--ambbg:#FFF4DB;--grn:#11743F;--grnbg:#E6F5EC;--gray:#5F6B76;--graybg:#EEF1F4;}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--text);background:var(--ice2);font-size:15px}
+button,input,select,textarea{font:inherit}
+header{background:var(--navy);color:#fff;padding:12px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{width:38px;height:38px;border-radius:10px;background:var(--teal);display:grid;place-items:center;flex:none}
+.brand h1{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:21px;margin:0;letter-spacing:.2px}
+.brand p{margin:2px 0 0;font-size:12.5px;color:#B8CCDC}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{font-size:12px;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.1);color:#DCE8F1;display:inline-flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:#9AA9B5}
+.dot.ok{background:#3DDC97}.dot.warn{background:#F5B83D}
+label.persona{font-size:12.5px;color:#B8CCDC;display:flex;align-items:center;gap:6px}
+label.persona select{background:var(--navy2);color:#fff;border:1px solid #2F5679;border-radius:8px;padding:6px 8px}
+main{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(330px,1fr);gap:16px;padding:16px 20px;height:calc(100vh - 66px)}
+.chat{background:#fff;border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;min-height:0}
+.msgs{flex:1;overflow-y:auto;padding:18px 18px 8px;display:flex;flex-direction:column;gap:14px}
+.welcome{background:var(--ice);border-radius:12px;padding:16px 18px}
+.welcome h2{font-family:Fraunces,Georgia,serif;font-size:19px;margin:0 0 6px;color:var(--navy)}
+.welcome p{margin:0 0 10px;color:#33495C;line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid #BFD3E0;background:#fff;color:var(--navy);border-radius:999px;padding:7px 12px;font-size:13px;cursor:pointer;text-align:left}
+.chip:hover{border-color:var(--teal);color:var(--teal)}
+.m{max-width:88%;line-height:1.55}
+.m.user{align-self:flex-end;background:var(--navy);color:#fff;padding:10px 14px;border-radius:14px 14px 4px 14px;white-space:pre-wrap}
+.m.bot{align-self:flex-start;background:var(--ice2);border:1px solid var(--line);padding:12px 14px;border-radius:14px 14px 14px 4px;cursor:pointer}
+.m.bot.sel{border-color:var(--teal);box-shadow:0 0 0 2px rgba(28,140,156,.15)}
+.m.bot p{margin:0 0 8px}.m.bot p:last-child{margin-bottom:0}
+.m.bot ul{margin:4px 0 8px 18px;padding:0}.m.bot li{margin:2px 0}
+.cite{display:inline-block;font-size:11px;font-weight:600;background:#D9EEF1;color:#0E5F6A;border-radius:5px;padding:0 5px;margin:0 1px;cursor:pointer;vertical-align:1px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{font-size:11.5px;border-radius:6px;padding:2px 7px;font-weight:500}
+.tag.ok{background:var(--grnbg);color:var(--grn)}.tag.bad{background:var(--ambbg);color:var(--amb)}.tag.block{background:var(--redbg);color:var(--red)}.tag.info{background:var(--graybg);color:var(--gray)}
+.safety{margin-top:10px;background:var(--ambbg);color:#5E3D00;border-radius:8px;padding:8px 10px;font-size:13px}
+.typing{color:var(--muted);font-style:italic}
+.composer{border-top:1px solid var(--line);padding:12px;display:flex;gap:8px;align-items:flex-end}
+.composer textarea{flex:1;resize:none;border:1px solid #C5D5E1;border-radius:10px;padding:10px 12px;min-height:44px;max-height:140px;outline:none;line-height:1.4}
+.composer textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(28,140,156,.15)}
+.btn{border:0;border-radius:10px;padding:11px 16px;background:var(--orange);color:#fff;font-weight:600;cursor:pointer}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.ghost{background:#fff;color:var(--navy);border:1px solid #C5D5E1;font-weight:500}
+.side{background:#fff;border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;min-height:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);padding:0 8px;overflow-x:auto}
+.tab{background:none;border:0;padding:12px 10px;font-size:13.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.tab.on{color:var(--navy);border-bottom-color:var(--orange);font-weight:600}
+.pane{display:none;overflow-y:auto;padding:14px 16px;flex:1}.pane.on{display:block}
+.pane h3{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:4px 0 10px}
+.src{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.src.hl{border-color:var(--teal);background:#F1FAFB}
+.src .top{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.src .n{font-weight:700;color:#0E5F6A;font-size:12px;background:#D9EEF1;border-radius:5px;padding:1px 6px}
+.src .k{font-size:11px;color:var(--muted)}
+.src .t{font-weight:600;font-size:13.5px;color:var(--navy)}
+.src .x{font-size:13px;color:#33495C;line-height:1.45;margin:4px 0}
+.src .s{font-size:11.5px;color:var(--muted)}
+.check{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+.check:last-child{border-bottom:0}
+.ic{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700}
+.ic.ok{background:var(--grnbg);color:var(--grn)}.ic.bad{background:var(--ambbg);color:var(--amb)}.ic.block{background:var(--redbg);color:var(--red)}
+.empty{color:var(--muted);font-size:13.5px;line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:11.5px;padding:6px 6px;border-bottom:1px solid var(--line);position:sticky;top:-14px;background:#fff}
+td{padding:7px 6px;border-bottom:1px solid #EEF3F7;vertical-align:top}
+.pri{font-weight:700;font-size:11px;border-radius:5px;padding:2px 6px;white-space:nowrap}
+.P1{background:var(--redbg);color:var(--red)}.P2{background:#FFE9DC;color:#A0410D}.P3{background:var(--ambbg);color:var(--amb)}.P4{background:var(--grnbg);color:var(--grn)}.Hold{background:var(--graybg);color:var(--gray)}
+.ask{border:1px solid #C5D5E1;background:#fff;border-radius:6px;font-size:11.5px;padding:3px 7px;cursor:pointer;color:var(--navy)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.filters button{font-size:12px;border:1px solid #C5D5E1;background:#fff;border-radius:999px;padding:4px 10px;cursor:pointer}
+.filters button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.doc{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+.doc .t{font-weight:600;color:var(--navy);font-size:13.5px}.doc .s{font-size:12px;color:var(--muted);margin-top:2px}
+.doc .rm{margin-left:auto;border:0;background:none;color:var(--muted);cursor:pointer;font-size:12px}
+.drop{border:1.5px dashed #9FB8C9;border-radius:12px;padding:14px;text-align:center;color:var(--muted);font-size:13px;margin:6px 0 14px;cursor:pointer}
+.drop.over{border-color:var(--teal);background:#F1FAFB;color:var(--teal)}
+.team{display:grid;gap:8px;margin-bottom:14px}
+.member{border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.member b{color:var(--navy);font-size:13.5px}.member div{font-size:12.5px;color:var(--muted)}
+.how{font-size:13.5px;line-height:1.5;color:#33495C}
+.how dt{font-weight:600;color:var(--navy);margin-top:10px}.how dd{margin:2px 0 0}
+.hbtn{background:#fff;color:var(--navy);border:0;border-radius:8px;padding:7px 12px;font-weight:600;font-size:13px;cursor:pointer}
+.handoff{margin-top:10px;border:1px solid #BFD3E0;background:#fff;border-radius:10px;padding:10px 12px;font-size:13.5px}
+.handoff b{color:var(--navy)}
+.handoff .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.handoff textarea{width:100%;border:1px solid #C5D5E1;border-radius:8px;padding:8px;margin-top:8px;resize:vertical;min-height:54px}
+.ticket{margin-top:8px;background:var(--grnbg);color:#0B4F2B;border-radius:8px;padding:8px 10px}
+.btn.sm{padding:7px 12px;font-size:13px}
+.trace{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.st{font-size:11.5px;border-radius:999px;padding:3px 9px;background:#E9EFF4;color:#5B7A93;font-weight:500;display:inline-flex;gap:5px;align-items:center}
+.st.run{background:#FFF1E8;color:#A0410D}.st.run::before{content:"";width:7px;height:7px;border-radius:50%;background:#E2622E;animation:pulse 1s infinite}
+.st.done{background:#E2F2F4;color:#0E5F6A}.st.done::before{content:"✓"}
+.st.skip{background:#F1F3F5;color:#8B97A2}.st.fail{background:var(--ambbg);color:var(--amb)}
+@keyframes pulse{50%{opacity:.3}}
+.fu{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.fu button{border:1px solid #BFD3E0;background:#fff;color:var(--navy);border-radius:999px;padding:5px 10px;font-size:12.5px;cursor:pointer}
+.fu button:hover{border-color:var(--teal);color:var(--teal)}
+.tools{display:flex;gap:6px;margin-top:8px}
+.tools button{border:1px solid #C5D5E1;background:#fff;border-radius:8px;font-size:12px;padding:4px 9px;cursor:pointer;color:var(--navy)}
+.mic{width:44px;height:44px;border-radius:10px;border:1px solid #C5D5E1;background:#fff;cursor:pointer;display:none;align-items:center;justify-content:center;flex:none}
+.mic.on{background:#FFF1E8;border-color:var(--orange)}
+.switch{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#B8CCDC}
+.note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.45}
+@media (max-width: 900px){main{grid-template-columns:1fr;height:auto}.chat{height:70vh}.side{height:70vh}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M4.9 6l14.2 12M19.1 6L4.9 18"/><path d="M9.5 3.5L12 6l2.5-2.5M9.5 20.5L12 18l2.5 2.5"/></svg></div>
+    <div><h1>ColdGuard Assistant</h1><p>Qi Groceries · Group 4 · AIML-501 R.5 GPT Hackathon</p></div>
+  </div>
+  <div class="hdr-right">
+    <label class="persona">Answer for
+      <select id="persona"></select>
+    </label>
+    <label class="switch" title="Use Claude to re-rank retrieved passages before answering"><input type="checkbox" id="rerank" checked> AI re-rank</label>
+    <button class="hbtn" id="humanBtn" type="button">Talk to a human</button>
+    <span class="pill" id="aiStatus"><span class="dot"></span><span>Connecting to AI…</span></span>
+  </div>
+</header>
+<main>
+  <section class="chat" aria-label="Chat">
+    <div class="msgs" id="msgs">
+      <div class="welcome">
+        <h2>Ask about any cooler, freezer or food in our stores</h2>
+        <p>ColdGuard answers from Qi Groceries' approved sources: food safety and spoilage-prevention rules for every food type, equipment temperature settings, the preventive maintenance schedule, alert procedures, our project write-up and live store sensor data. Every answer cites its sources and passes accuracy checks. If the answer isn't in our sources, ColdGuard won't guess. It connects you to the right person on the team.</p>
+        <div class="chips" id="chips"></div>
+      </div>
+    </div>
+    <form class="composer" id="form">
+      <button type="button" class="btn ghost" id="upBtn" title="Upload a file to the knowledge base">Upload</button>
+      <button type="button" class="mic" id="mic" title="Speak your question" aria-label="Speak your question"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B2E4F" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+      <textarea id="q" rows="1" placeholder="Ask ColdGuard… e.g. Which cases need attention in Austin right now?" aria-label="Your question"></textarea>
+      <button class="btn" id="send" type="submit">Send</button>
+    </form>
+  </section>
+  <aside class="side" aria-label="Details">
+    <div class="tabs" role="tablist">
+      <button class="tab on" data-tab="sources">Sources &amp; checks</button>
+      <button class="tab" data-tab="data">Live store data</button>
+      <button class="tab" data-tab="kb">Knowledge base</button>
+      <button class="tab" data-tab="about">Team &amp; method</button>
+    </div>
+    <div class="pane on" id="pane-sources"><p class="empty">Ask a question. The sources ColdGuard retrieved and the results of its accuracy checks will appear here.</p></div>
+    <div class="pane" id="pane-data"></div>
+    <div class="pane" id="pane-kb"></div>
+    <div class="pane" id="pane-about"></div>
+  </aside>
+</main>
+<input type="file" id="file" accept=".txt,.md,.csv,.json" multiple hidden>
+
+<script>
+/* ColdGuard core: knowledge base, store data, retrieval, decision tree, guardrails.
+   Pure functions only, so they can be tested outside the browser. */
+
+const COMPANY = "Qi Groceries";
+
+const TEAM = [
+  { name: "Dhanush Papani", role: "Regional Operations Manager and Machine Learning Lead", persona: "Regional Operations Manager" },
+  { name: "Congshan Yang", role: "Store Manager and Alert System Engineer", persona: "Store Manager" },
+  { name: "Qi Wang", role: "Refrigeration Technician and Prevention Lead", persona: "Refrigeration Technician" },
+  { name: "Farukh Ahemad Gesukhan Pathan", role: "Food Safety and QA Manager; Model Validation Lead", persona: "Food Safety and QA Manager" },
+  { name: "Jayanth Kumar Dadi", role: "Facilities Data Analyst and Data Engineering Lead", persona: "Facilities Data Analyst" },
+];
+
+/* ---------------- Knowledge base (company documents) ---------------- */
+const KB_DOCS = [
+  {
+    id: "temp-std", title: "Cold Holding Temperature Standard", source: "Qi Groceries Food Safety Policy FS-01 (based on FDA Food Code 2026; USDA Agriculture Handbook 66)",
+    sections: [
+      ["Cold holding limit for TCS foods", "All time/temperature control for safety (TCS) foods, including dairy, eggs, deli and ready-to-eat items, fresh meat, poultry and seafood, must be held at 41 °F (5 °C) or below. This limit comes from the FDA Food Code 2026, which Qi Groceries follows in every state where it operates."],
+      ["Target ranges by food category", "Dairy and eggs: 33–41 °F. Fresh meat and poultry: 28–32 °F target, never above 41 °F. Seafood: 30–34 °F. Deli and ready-to-eat: 41 °F or below. Frozen foods: 0 °F or below. Ice cream: -10 °F to -20 °F. Leafy greens: 32–36 °F."],
+      ["Chill-sensitive produce", "Some produce is damaged by cold rather than heat. Bananas, tomatoes and other tropical produce suffer chilling injury below about 55 °F (13 °C) (USDA Agriculture Handbook 66). For these items the risk is a quality loss from being too cold, not a food safety violation. ColdGuard flags them as a P3 quality warning."],
+      ["Why one threshold is not enough", "Because each food has its own range, Qi Groceries does not use one alarm threshold for every case. ColdGuard compares each case against the limit for the food category assigned to that case in the store planogram."],
+    ],
+  },
+  {
+    id: "excursion", title: "Temperature Excursion and Discard Guide", source: "Qi Groceries Food Safety Procedure FS-04",
+    sections: [
+      ["What counts as an excursion", "An excursion is any period when a TCS food is above its limit (41 °F for refrigerated TCS food, 0 °F for frozen food). ColdGuard tracks minutes above limit for every case, because both how far and how long the food stays warm matter."],
+      ["Discard decision rule", "Qi Groceries policy: if refrigerated TCS food has been above 41 °F for a total of 4 hours (240 minutes) or more, it must be discarded. If it has been above 41 °F for less than 4 hours, move it immediately to a working cooler at 41 °F or below and ask the Food Safety and QA Manager to confirm before it is sold. When in doubt, throw it out."],
+      ["Who makes the final call", "ColdGuard never makes the final keep-or-discard decision. The Food Safety and QA Manager (role played by Farukh Ahemad Gesukhan Pathan in our team) reviews the time above limit and approves the action. Every decision is recorded in the HACCP corrective-action log."],
+      ["Frozen food that has thawed", "Frozen food that still has ice crystals or is at 40 °F or below may be refrozen, with a possible loss of quality. Thawed frozen TCS food above 41 °F follows the refrigerated discard rule."],
+    ],
+  },
+  {
+    id: "alerts", title: "Alert Priority and Escalation SOP", source: "Qi Groceries Operations SOP OPS-12",
+    sections: [
+      ["Priority levels", "P1 Critical: food above its safe limit, or imminent failure of a central refrigeration rack. P2 High: imminent failure of a single case, or medium failure risk combined with a heat or warm-weather forecast. P3 Medium: sensor fault, medium failure risk without a weather threat, or chill-injury quality warning. P4 Info: normal operation, dashboard only."],
+      ["Response times", "P1: acknowledge and act within 15 minutes; notify the Store Manager and the Refrigeration Technician, escalating to Regional Operations. P2: respond within 2 to 4 hours; notify the Store Manager and the Refrigeration Technician. P3: respond within 24 hours through the maintenance queue. P4: no response needed."],
+      ["Escalation", "If an alert is not acknowledged within its response time, it escalates one level, for example from P2 to P1. After-hours alerts go to the on-call Store Manager by app and SMS. Every P1 and P2 alert automatically creates a HACCP corrective-action record."],
+      ["Alarm fatigue", "Ranked alerts with a stated reason reduce alarm fatigue. Staff should never silence an alert without recording the reason. Repeated false alerts from one case are sent to the Facilities Data Analyst to check the sensor."],
+    ],
+  },
+  {
+    id: "tree", title: "ColdGuard Decision Tree", source: "Qi Groceries AI Model Card MC-02, section 3",
+    sections: [
+      ["Order of checks", "ColdGuard turns each prediction into an action with five checks, in order. 1) Is the sensor data valid? If not, open a sensor fault ticket (P3). 2) Is the case in a defrost cycle? If yes, hold the alert and watch for recovery; escalate if not recovered within 45 minutes. 3) Is the food above its safe limit? If yes, P1: move stock and log HACCP. 4) Is the failure risk 0.7 or higher? If yes, P1 for a central rack, otherwise P2. 5) Is the failure risk between 0.4 and 0.7? If yes, P2 if a heat or warm-weather forecast applies to that store, otherwise P3. Otherwise: normal, keep monitoring."],
+      ["Why sensor health is checked first", "A failed or drifting sensor can look exactly like a failed cooler. Checking sensor health first prevents false alarms from reaching staff."],
+      ["Why defrost is checked second", "Defrost cycles are the most common cause of false temperature alarms. A short, expected rise during defrost is not a violation unless the case fails to recover within 45 minutes."],
+    ],
+  },
+  {
+    id: "model", title: "ColdGuard AI Model Card", source: "Qi Groceries AI Model Card MC-02",
+    sections: [
+      ["Models used", "Failure risk is predicted by tree-based models: Random Forest (baseline), XGBoost (main model for failure prediction) and LightGBM (fast hourly scoring for every case in every store). CatBoost is an option if the number of categories grows. Tree-based models were chosen because the data is structured, the features mix numbers and categories, and every alert must be explained."],
+      ["Features", "One row per case per hour: case temperature, minutes above food limit, compressor duty cycle, suction pressure trend, door openings per hour, defrost status, sensor health, equipment type and age, refrigerant, food category, state and climate zone, and the local weather forecast."],
+      ["Metric and explanation", "Recall is the priority metric because a missed failure costs far more than a false alarm. SHAP values show the top reasons behind each score, and those reasons are shown in every alert."],
+      ["Limitations", "The model predicts risk; it does not inspect food. Scores depend on sensor quality. In this demo, sensor readings and model scores come from a sample feed for six stores."],
+    ],
+  },
+  {
+    id: "equip", title: "Refrigeration Troubleshooting Guide", source: "Qi Groceries Facilities Guide FAC-07",
+    sections: [
+      ["Central rack (multiplex system)", "Symptoms: several cases warming at once, compressor duty cycle above 95%, suction pressure falling over several hours. Likely causes: refrigerant leak, failing compressor, dirty condenser coil. Action: P1 if failure risk is 0.7 or higher, because one rack feeds dozens of cases. Technician checks for leaks and condenser airflow; refrigerant work must be done by an EPA Section 608 certified technician."],
+      ["Open multi-deck display case", "Symptoms: temperature rising during busy hours, high door or shopper traffic, warm air from the sales floor. Actions: check that air curtains and vents are not blocked by overstocked product, use night covers after closing, check the store HVAC humidity."],
+      ["Walk-in cooler or freezer", "Symptoms: slow temperature recovery, ice on the evaporator, door alarms. Actions: check door gaskets and closers, keep doors closed, check the defrost timer, and confirm the evaporator fan is running."],
+      ["Reach-in and island cases", "Symptoms: frost build-up, fogged doors, uneven temperatures. Actions: check door seals and heaters, do not load product above the load line, and keep return air grilles clear."],
+      ["Sensor problems", "Symptoms: flat-line readings, sudden jumps, missing data. Actions: compare with a calibrated hand thermometer, then send a sensor fault ticket to the Facilities Data Analyst."],
+    ],
+  },
+  {
+    id: "weather", title: "Weather and Power Readiness Playbook", source: "Qi Groceries Operations Playbook OPS-20 (power outage guidance from USDA FSIS / FoodSafety.gov)",
+    sections: [
+      ["Weather differs by state", "Qi Groceries stores operate in Texas, Georgia, Colorado, Minnesota, New Jersey and Ohio. Heat and humidity raise condenser pressure and compressor load; storms bring power outages. ColdGuard adds each store's local forecast to the model, so a medium risk becomes P2 when a heat or warm-weather forecast applies."],
+      ["Before a heat wave or warm spell", "Pre-cool cases 2 °F below normal set point, clean condenser coils, check refrigerant levels on units with a falling suction pressure trend, and schedule technicians in advance."],
+      ["During a power outage", "Keep cooler and freezer doors closed. A closed refrigerator keeps food safe for about 4 hours. A full freezer holds its temperature for about 48 hours (24 hours if half full). Record start and end times; after power returns, apply the excursion and discard guide."],
+      ["Winter conditions", "In cold climates such as Minnesota and Colorado, watch for low ambient temperatures affecting condenser controls and for snow blocking rooftop condensers."],
+    ],
+  },
+  {
+    id: "roles", title: "Who Acts on Each Alert", source: "Qi Groceries Roles Matrix (Group 4 project roles)",
+    sections: [
+      ["Store Manager", "Played by Congshan Yang. Receives P1 and P2 alerts by app, moves stock to a working cooler, checks doors and loading, and acknowledges the alert."],
+      ["Refrigeration Technician", "Played by Qi Wang. Receives equipment alerts, brings the right parts, repairs leaks, compressors and fans, and leads preventive actions such as pre-cooling and defrost tuning."],
+      ["Food Safety and QA Manager", "Played by Farukh Ahemad Gesukhan Pathan. Reviews time above limit, approves keep-or-discard decisions and files the HACCP record. Also validates the model and checks that explanations make sense."],
+      ["Facilities Data Analyst", "Played by Jayanth Kumar Dadi. Keeps sensor and weather data feeds healthy, investigates sensor faults and drift, and tracks energy savings."],
+      ["Regional Operations Manager", "Played by Dhanush Papani. Sees risk across all stores and states, plans equipment replacement and budgets, and orders pre-cooling before forecast heat. Also leads the machine learning work."],
+    ],
+  },
+  {
+    id: "settings", title: "Equipment Temperature Settings", source: "Qi Groceries Facilities Standard FAC-02 (set points kept below FDA Food Code 2026 limits)",
+    sections: [
+      ["How set points are chosen", "Set points are the temperatures the thermostat or controller is set to. Qi Groceries sets every refrigerated case at least 3 °F below the 41 °F food safety limit, so normal swings during door openings and defrost never reach the limit. Alarm thresholds are set at the safe limit, not at the set point."],
+      ["Walk-in cooler", "Walk-in cooler set point: 35–38 °F. Alarm at 41 °F. Keep 4–6 inches of air space around shelving and store raw meat on the lowest shelves, below ready-to-eat food."],
+      ["Walk-in freezer", "Walk-in freezer set point: -10 to 0 °F. Alarm at 5 °F, except during a logged defrost cycle. Keep the door closed and check the door heater and gasket for ice."],
+      ["Dairy multi-deck case", "Open multi-deck dairy case set point: 34–38 °F. Alarm at 41 °F. Keep product below the load line and use night covers after closing."],
+      ["Meat and poultry case", "Fresh meat and poultry case set point: 28–32 °F. Alarm at 41 °F."],
+      ["Seafood case", "Seafood case set point: 30–34 °F. Fresh fish is displayed on self-draining crushed ice. Alarm at 41 °F."],
+      ["Deli and ready-to-eat reach-in", "Deli and ready-to-eat reach-in set point: 34–38 °F. Alarm at 41 °F."],
+      ["Produce wet rack and produce cooler", "Leafy greens and wet rack set point: 32–36 °F with misting. Chill-sensitive produce display (bananas, tomatoes, avocados before ripening): 55–60 °F, never below 55 °F."],
+      ["Frozen food and ice cream cases", "Frozen food island or reach-in freezer set point: -10 to 0 °F. Ice cream case set point: -10 to -20 °F. Alarm at 5 °F, except during a logged defrost cycle."],
+      ["Beverage cooler and floral cooler", "Beverage cooler set point: 34–38 °F (quality only, beverages are not TCS foods). Floral cooler set point: 34–38 °F."],
+      ["Sales floor HVAC", "Store sales floor: 72–75 °F and relative humidity at or below 55%. Open refrigerated cases are designed and rated for about 75 °F and 55% relative humidity, so a warmer or more humid store makes every case work harder."],
+    ],
+  },
+  {
+    id: "pm", title: "Preventive Maintenance Schedule", source: "Qi Groceries Facilities Standard FAC-05",
+    sections: [
+      ["Daily tasks (store team)", "Record every case temperature at opening and at closing, or confirm ColdGuard readings with a hand thermometer. Check that doors close and seal, air curtains and return grilles are not blocked, product is below the load line, and night covers are used after closing."],
+      ["Weekly tasks (store team)", "Clean spills and debris from case interiors and drain areas, check door gaskets for tears, and check walk-in door closers and strip curtains. Clear ice build-up on walk-in freezer floors and door frames."],
+      ["Monthly tasks (store team and technician)", "Clean condenser coils on self-contained units, check evaporator coils for frost or ice, check fan motors for noise, and test each door gasket with the paper test (a sheet of paper closed in the door should not slide out easily). Calibrate hand thermometers with the ice-point method: in ice water the thermometer must read 32 °F."],
+      ["Quarterly tasks (Refrigeration Technician)", "Inspect each central rack: refrigerant pressures, compressor amperage, oil levels, electrical connections and controls. Run a refrigerant leak check. Clean rooftop condenser coils and check condenser fans. Verify defrost timers and defrost termination settings."],
+      ["Annual tasks (Refrigeration Technician and Facilities Data Analyst)", "Full system service before the hot season, calibration of every ColdGuard temperature probe against a certified reference, replacement of worn door gaskets, and review of each unit's failure-risk history to plan equipment replacement."],
+      ["Predictive maintenance with ColdGuard", "ColdGuard turns the schedule from fixed dates into need-based work. A falling suction pressure trend or a duty cycle above 90% sends the unit to the technician before it fails. Medium-risk units in stores with a heat or warm-weather forecast are serviced first."],
+      ["Refrigerant leaks", "Refrigerant leak repairs and refrigerant handling must be done by an EPA Section 608 certified technician. Industry data from EPA's GreenChill program shows the average U.S. supermarket leaks about 25% of its refrigerant each year, so early leak detection saves money and protects the environment."],
+    ],
+  },
+  {
+    id: "prevent", title: "Food Spoilage Prevention by Food Type", source: "Qi Groceries Food Safety Procedure FS-06 (based on FDA Food Code 2026 and USDA Agriculture Handbook 66)",
+    sections: [
+      ["Rules for every food", "Receive refrigerated TCS food at 41 °F or below and frozen food frozen solid; reject deliveries that are warmer. Put cold deliveries away within 15 minutes of receiving. Rotate stock first in, first out (FIFO). Never load product above the case load line or block air vents. Keep raw meat, poultry and seafood below ready-to-eat food to prevent cross-contamination."],
+      ["Dairy and eggs", "Hold at 33–41 °F. Do not let dairy sit on the sales floor during stocking for more than 15 minutes. Keep milk away from the case doors and front edge where it warms fastest. Rotate by sell-by date."],
+      ["Fresh meat and poultry", "Hold at 28–32 °F and never above 41 °F. Store poultry on the lowest shelf. Keep packages sealed and keep the meat case away from heat sources such as lights and the sales floor door."],
+      ["Seafood", "Hold at 30–34 °F on self-draining crushed ice. Replace ice daily, drain melt water, and keep raw seafood separate from cooked or ready-to-eat seafood."],
+      ["Deli and ready-to-eat foods", "Hold at 41 °F or below. Ready-to-eat TCS food prepared in the store or opened from a package must be date-marked and used or discarded within 7 days when held at 41 °F or below (FDA Food Code date marking). Cooked foods must be cooled from 135 °F to 70 °F within 2 hours and to 41 °F or below within a total of 6 hours."],
+      ["Produce", "Leafy greens: 32–36 °F with misting. Keep ethylene-producing fruit (apples, bananas, tomatoes) away from ethylene-sensitive produce such as leafy greens and broccoli. Chill-sensitive produce such as bananas, tomatoes and avocados before ripening must stay at 55 °F or above to avoid chilling injury. Cut fruit and vegetables are TCS foods and must be held at 41 °F or below."],
+      ["Frozen foods and ice cream", "Hold frozen food at 0 °F or below and ice cream at -10 to -20 °F. Never stack product above the freezer load line. Repeated thawing and refreezing causes ice crystals and freezer burn, so keep doors and lids closed and restock quickly."],
+      ["Bakery and dry goods", "Bakery items without cream or custard fillings and dry goods are not refrigerated, but keep them cool, dry and away from direct sunlight. Cream-filled and custard-filled bakery items are TCS foods and must be held at 41 °F or below."],
+    ],
+  },
+  {
+    id: "project", title: "Group 4 Project Overview", source: "AIML-501 Group 4 project write-up (R.2 Decision Tree Activity and R.5 GPT Hackathon)",
+    sections: [
+      ["Project summary", "Group 4's project is AI-Based Smart Temperature Management in Grocery Stores for Qi Groceries. It predicts refrigeration failures, temperature violations and food spoilage risk using tree-based models (Random Forest, XGBoost and LightGBM), and turns each prediction into a ranked alert with a business decision tree. ColdGuard, this RAG chatbot, lets store teams ask questions about it in plain language."],
+      ["Business problem: six gaps", "Fixed alarms react too late and ignore context. The six gaps are: 1) centralized A/C and refrigeration, where one rack fault hits dozens of cases; 2) weather that changes by state; 3) different types of refrigeration that fail differently; 4) different types of food with different safe ranges; 5) no prevention, because maintenance is reactive; 6) poor alert management, where unranked alarms cause alarm fatigue."],
+      ["Why a tree fits (signs from the D2L reading)", "The problem shows all three signs that a tree-based model fits: structured data (one row per case per hour), a decision to explain (managers, technicians and food safety staff act on every alert, and HACCP audits need the reason), and mixed features (numbers such as temperature and duty cycle beside categories such as equipment type, food category and state)."],
+      ["Three questions at our table", "Which column would the first split use? Minutes above the food's safe limit, because it already accounts for food type; for failure prediction, the compressor duty cycle trend. Why a tree and not a neural network? The data is mixed and tabular, trees train fast, handle missing sensor readings and explain every alert, and research by Grinsztajn et al. (2022) found tree-based models still outperform deep learning on medium-sized tabular data. Who reads the explanation? The Store Manager moves stock, the Refrigeration Technician fixes the part, the Food Safety and QA Manager files the HACCP record, the Facilities Data Analyst fixes data feeds, and Regional Operations plans budgets."],
+      ["Value add", "Compared with fixed alarms, the models predict hours ahead and adjust to each food, equipment type and state. Compared with neural networks, they are equally or more accurate on tables, faster to train and explainable. Compared with logistic regression, they capture interactions such as a heat wave combined with an old compressor and a dairy case. Benefits: less food waste, fewer emergency repairs, less alarm fatigue and audit-ready food safety records."],
+      ["Ethics and responsible use", "The team applies biblical and ethical thinking: stewardship (Proverbs 27:23, know the state of the equipment), waste not (John 6:12), love of neighbor (Mark 12:31, so food safety comes before profit and recall is the priority metric), and truthfulness with a human in the loop (every alert is explained and a person makes the final keep-or-discard decision). Alerts are used to protect food, never to blame or secretly monitor workers."],
+      ["Team members and roles", "Dhanush Papani: Regional Operations Manager and Machine Learning Lead. Congshan Yang: Store Manager and Alert System Engineer. Qi Wang: Refrigeration Technician and Prevention Lead. Farukh Ahemad Gesukhan Pathan: Food Safety and QA Manager and Model Validation Lead. Jayanth Kumar Dadi: Facilities Data Analyst and Data Engineering Lead. Course: AIML-501 Model Development, Dr. Frederick Ainoo, Indiana Wesleyan University, residency November 13–14, 2026."],
+      ["Industry statistics", "EPA's GreenChill program estimates the average U.S. supermarket leaks about 25% of its refrigerant each year, while GreenChill partner stores averaged 12.9% in 2021. ReFED estimates that in 2024 the U.S. retail sector generated 3.98 million tons of surplus food, of which 2.72 million tons became food waste, with retail surplus valued at $26.9 billion. Produce (902,000 tons) and fresh meat and seafood (369,000 tons) were the top two food types wasted in retail."],
+    ],
+  },
+  {
+    id: "chatbot", title: "How ColdGuard Works (RAG design)", source: "Qi Groceries ColdGuard design document (R.5 GPT Hackathon)",
+    sections: [
+      ["Retrieval-Augmented Generation", "ColdGuard is a retrieval-augmented generation (RAG) chatbot. For every question it first retrieves the most relevant passages from Qi Groceries' approved documents, live store sensor data and any files uploaded in the session, then a large language model (Claude) writes an answer using only those passages and cites them as S1, S2 and so on."],
+      ["Data sources and storage", "Sources: company policy documents, the equipment settings and maintenance standards, the food prevention guide, the AI model card, the project overview, a store sensor feed snapshot for six stores, and user uploads (.txt, .md, .csv, .json). In this demo all data is held in memory in the browser for the session; in production it would live in a cloud vector store and the building management system database."],
+      ["Preprocessing", "Documents are split into sections; sensor rows are converted into readable records and scored by the decision tree; text is lowercased, stop words removed, words stemmed, synonyms added (for example milk to dairy) and temperatures standardised to °F."],
+      ["Guardrails and human handoff", "Before answering: prompt-injection and off-topic questions are blocked. After answering: every citation must point to a retrieved source, every temperature must appear in the sources, and retrieval confidence is shown. If the answer is not in the approved sources, ColdGuard does not guess: it says so and offers to connect the user to a human agent, routed to the right team member."],
+    ],
+  },
+];
+
+/* ---------------- Store sensor snapshot (demo feed) ---------------- */
+const STORES = {
+  "QG-101": { city: "Austin", state: "TX", forecast: "Warm spell, 88 °F high", warm: true },
+  "QG-214": { city: "Atlanta", state: "GA", forecast: "79 °F, humid, thunderstorms likely", warm: true },
+  "QG-305": { city: "Denver", state: "CO", forecast: "38 °F, light snow", warm: false },
+  "QG-412": { city: "Minneapolis", state: "MN", forecast: "25 °F, clear", warm: false },
+  "QG-518": { city: "Newark", state: "NJ", forecast: "52 °F, cloudy", warm: false },
+  "QG-623": { city: "Cincinnati", state: "OH", forecast: "47 °F, light rain", warm: false },
+};
+// limit: upper safe limit in °F; minLimit: lower quality limit for chill-sensitive produce
+const SENSOR_ROWS = [
+  { store: "QG-101", case: "D-14", equip: "Open multi-deck case", food: "Dairy", temp: 44.6, limit: 41, minsAbove: 95, duty: 96, suction: -3.8, defrost: false, doors: 58, sensor: "OK", rack: false, risk: 0.82, reasons: "door openings 58/hr, duty cycle 96%, suction pressure falling" },
+  { store: "QG-101", case: "P-04", equip: "Walk-in cooler", food: "Produce (leafy greens)", temp: 35.2, limit: 41, minsAbove: 0, duty: 90, suction: -2.4, defrost: false, doors: 22, sensor: "OK", rack: false, risk: 0.55, reasons: "duty cycle 90%, warm-spell forecast" },
+  { store: "QG-101", case: "F-07", equip: "Island freezer", food: "Frozen", temp: -2.0, limit: 0, minsAbove: 0, duty: 78, suction: -0.5, defrost: false, doors: 20, sensor: "OK", rack: false, risk: 0.12, reasons: "all readings normal" },
+  { store: "QG-214", case: "RACK-B", equip: "Central rack (multiplex)", food: "Feeds 18 cases (dairy, meat, deli)", temp: 37.9, limit: 41, minsAbove: 0, duty: 98, suction: -5.2, defrost: false, doors: 0, sensor: "OK", rack: true, risk: 0.88, reasons: "suction pressure falling 5.2 psi over 6 h, duty cycle 98%: likely refrigerant leak" },
+  { store: "QG-214", case: "S-05", equip: "Closed service case", food: "Seafood", temp: 33.4, limit: 41, minsAbove: 0, duty: 74, suction: -0.6, defrost: false, doors: 15, sensor: "OK", rack: false, risk: 0.18, reasons: "all readings normal" },
+  { store: "QG-214", case: "P-11", equip: "Produce display", food: "Bananas (chill-sensitive)", temp: 51.2, limit: 70, minLimit: 55, minsAbove: 0, duty: 65, suction: -0.3, defrost: false, doors: 30, sensor: "OK", rack: false, risk: 0.10, reasons: "temperature 51.2 °F is below the 55 °F chill-injury point" },
+  { store: "QG-305", case: "D-02", equip: "Reach-in cooler", food: "Dairy", temp: 47.9, limit: 41, minsAbove: 30, duty: 70, suction: -0.2, defrost: false, doors: 18, sensor: "Drift", rack: false, risk: 0.20, reasons: "reading jumped 9 °F in 1 minute and other probes read 36 °F: sensor drift" },
+  { store: "QG-305", case: "F-01", equip: "Ice cream freezer", food: "Ice cream", temp: 6.5, limit: 0, minsAbove: 18, duty: 60, suction: -0.4, defrost: true, doors: 9, sensor: "OK", rack: false, risk: 0.15, reasons: "defrost cycle running for 18 min" },
+  { store: "QG-412", case: "D-09", equip: "Open multi-deck case", food: "Dairy", temp: 36.2, limit: 41, minsAbove: 0, duty: 68, suction: -0.3, defrost: false, doors: 35, sensor: "OK", rack: false, risk: 0.09, reasons: "all readings normal" },
+  { store: "QG-412", case: "W-03", equip: "Walk-in freezer", food: "Frozen", temp: -6.0, limit: 0, minsAbove: 0, duty: 72, suction: -0.4, defrost: false, doors: 6, sensor: "OK", rack: false, risk: 0.11, reasons: "all readings normal" },
+  { store: "QG-518", case: "DL-04", equip: "Reach-in cooler", food: "Deli (ready-to-eat)", temp: 40.1, limit: 41, minsAbove: 0, duty: 91, suction: -2.1, defrost: false, doors: 26, sensor: "OK", rack: false, risk: 0.56, reasons: "duty cycle 91%, worn door seal reported, suction pressure falling" },
+  { store: "QG-518", case: "M-02", equip: "Closed service case", food: "Fresh meat", temp: 31.5, limit: 41, minsAbove: 0, duty: 70, suction: -0.5, defrost: false, doors: 14, sensor: "OK", rack: false, risk: 0.14, reasons: "all readings normal" },
+  { store: "QG-623", case: "M-06", equip: "Open multi-deck case", food: "Fresh meat", temp: 39.0, limit: 41, minsAbove: 0, duty: 93, suction: -2.6, defrost: false, doors: 31, sensor: "OK", rack: false, risk: 0.61, reasons: "duty cycle 93%, suction pressure falling 2.6 psi" },
+  { store: "QG-623", case: "D-01", equip: "Open multi-deck case", food: "Dairy", temp: 37.4, limit: 41, minsAbove: 0, duty: 66, suction: -0.2, defrost: false, doors: 40, sensor: "OK", rack: false, risk: 0.08, reasons: "all readings normal" },
+];
+
+/* Decision tree from the R.2 activity */
+function scoreCase(r) {
+  const st = STORES[r.store] || {};
+  if (r.sensor !== "OK") return { priority: "P3", outcome: "Sensor fault ticket", action: "Check with a hand thermometer; send to Facilities Data Analyst", step: 1 };
+  if (r.defrost) return { priority: "Hold", outcome: "Defrost in progress", action: "Hold alert; escalate if not recovered within 45 minutes", step: 2 };
+  if (r.temp > r.limit) return { priority: "P1", outcome: "Food above safe limit", action: r.minsAbove >= 240 ? "Discard (above limit 4 h or more); log HACCP" : "Move stock to a working cooler now; Food Safety to confirm; log HACCP", step: 3 };
+  if (r.risk >= 0.7) return r.rack
+    ? { priority: "P1", outcome: "Imminent central rack failure", action: "Dispatch technician now; prepare to move stock from all cases on the rack", step: 4 }
+    : { priority: "P2", outcome: "Imminent case failure", action: "Technician within 2–4 hours", step: 4 };
+  if (r.risk >= 0.4) return st.warm
+    ? { priority: "P2", outcome: "Preventive action (warm forecast)", action: "Pre-cool 2 °F below set point; schedule technician", step: 5 }
+    : { priority: "P3", outcome: "Preventive maintenance", action: "Add to maintenance queue (24 h)", step: 5 };
+  if (r.minLimit !== undefined && r.temp < r.minLimit) return { priority: "P3", outcome: "Chill-injury quality warning", action: "Raise set point above 55 °F; quality, not safety, issue", step: 6 };
+  return { priority: "P4", outcome: "Normal", action: "Keep monitoring", step: 6 };
+}
+
+function rowToText(r) {
+  const st = STORES[r.store] || {};
+  const s = scoreCase(r);
+  return `Store ${r.store} (${st.city}, ${st.state}; forecast: ${st.forecast}). Case ${r.case}, ${r.equip}, ${r.food}. ` +
+    `Temperature ${r.temp} °F, safe limit ${r.limit} °F${r.minLimit !== undefined ? `, chill-injury point ${r.minLimit} °F` : ""}, minutes above limit ${r.minsAbove}. ` +
+    `Compressor duty cycle ${r.duty}%, suction pressure trend ${r.suction} psi over 6 h, door openings ${r.doors}/hr, defrost ${r.defrost ? "active" : "off"}, sensor ${r.sensor}. ` +
+    `Model failure risk ${r.risk.toFixed(2)} (top reasons: ${r.reasons}). Decision tree result: ${s.priority} ${s.outcome}. Recommended action: ${s.action}.`;
+}
+
+/* ---------------- Retrieval (BM25) ---------------- */
+const STOP = new Set("a an the and or of to in on for is are was were be been it its this that these those with as at by from what which who whom how why when where do does did can could should would will i we you they he she my our your their me us them if then than so not no yes about into over under up down out any all each per vs".split(" "));
+const SYN = {
+  fridge: ["refrigerator", "cooler"], fridges: ["refrigerator", "cooler"], refrigerator: ["cooler"], temp: ["temperature"], temps: ["temperature"],
+  milk: ["dairy"], cheese: ["dairy"], yogurt: ["dairy"], beef: ["meat"], chicken: ["poultry", "meat"], fish: ["seafood"], shrimp: ["seafood"],
+  alarm: ["alert"], alarms: ["alert"], warning: ["alert"], hot: ["heat", "warm"], heatwave: ["heat", "warm"], storm: ["outage", "storms"], blackout: ["outage", "power"],
+  toss: ["discard"], throw: ["discard"], spoiled: ["discard", "spoilage"], unsafe: ["discard", "limit"], safe: ["limit"], leak: ["refrigerant", "leak"],
+  texas: ["tx", "austin"], georgia: ["ga", "atlanta"], colorado: ["co", "denver"], minnesota: ["mn", "minneapolis"], jersey: ["nj", "newark"], ohio: ["oh", "cincinnati"],
+  banana: ["bananas", "chill"], bananas: ["chill"], defrosting: ["defrost"], escalate: ["escalation"], urgent: ["p1", "critical"], critical: ["p1"],
+  model: ["models", "xgboost", "lightgbm"], salad: ["deli", "ready-to-eat"], long: ["days", "date"], kept: ["date", "days"], expire: ["date"], members: ["team", "role"], who: ["role", "team"], setting: ["set", "point"], settings: ["set", "point"], thermostat: ["set", "point"], maintenance: ["maintenance", "schedule"], pm: ["maintenance"], clean: ["clean", "coil"], machine: ["equipment", "case"], machines: ["equipment", "case"], prevent: ["prevention", "spoilage"], prevention: ["spoilage"], members: ["team", "role"], project: ["group", "project"], ai: ["model"], tree: ["decision"], who: ["role"], team: ["role", "played"], ice: ["frozen", "freezer"], freezers: ["freezer"],
+};
+function stem(w) {
+  if (/^\d/.test(w) || w.includes("-")) return w;
+  if (w.length > 5 && w.endsWith("ing")) w = w.slice(0, -3);
+  else if (w.length > 4 && w.endsWith("ed")) w = w.slice(0, -2);
+  else if (w.length > 3 && w.endsWith("s") && !w.endsWith("ss")) w = w.slice(0, -1);
+  if (w.length > 3 && w.endsWith("e")) w = w.slice(0, -1);
+  return w;
+}
+function tokenize(text, expand) {
+  const raw = text.toLowerCase().replace(/[°]/g, " ").match(/[a-z0-9][a-z0-9\-\.]*/g) || [];
+  const out = [];
+  for (let w of raw) {
+    w = w.replace(/\.+$/, "");
+    if (!w || w.length < 2 || STOP.has(w)) continue;
+    out.push(stem(w));
+    if (expand && SYN[w]) SYN[w].forEach((s) => out.push(stem(s)));
+  }
+  return out;
+}
+
+function buildIndex(chunks) {
+  const docs = chunks.map((c) => { const toks = tokenize(c.title + " " + c.text + " " + (c.keywords || ""), false); const tf = {}; toks.forEach((t) => (tf[t] = (tf[t] || 0) + 1)); return { c, tf, len: toks.length }; });
+  const df = {}; docs.forEach((d) => Object.keys(d.tf).forEach((t) => (df[t] = (df[t] || 0) + 1)));
+  const avg = docs.reduce((a, d) => a + d.len, 0) / Math.max(docs.length, 1);
+  return { docs, df, avg, N: docs.length };
+}
+const DATA_INTENT = /(qg-\d|\bstores?\b|\bcases?\b|right now|current|\bnow\b|status|which|austin|atlanta|denver|minneapolis|newark|cincinnati|\b(tx|ga|co|mn|nj|oh)\b|texas|georgia|colorado|minnesota|jersey|ohio|\brack|reading|showing|attention|\b[a-z]{1,2}-\d{1,2}\b|p1|p2|p3|priority|alerts? (today|now)|sensor data)/i;
+function search(index, query, k = 5) {
+  const q = [...new Set(tokenize(query, true))];
+  const k1 = 1.4, b = 0.75;
+  const scored = index.docs.map((d) => {
+    let s = 0;
+    for (const t of q) {
+      const f = d.tf[t]; if (!f) continue;
+      const idf = Math.log(1 + (index.N - index.df[t] + 0.5) / (index.df[t] + 0.5));
+      s += idf * (f * (k1 + 1)) / (f + k1 * (1 - b + b * d.len / index.avg));
+    }
+    // exact store or case ids get a strong boost
+    const ql = query.toLowerCase();
+    if (d.c.storeId && ql.includes(d.c.storeId.toLowerCase())) s += 6;
+    if (d.c.caseId && new RegExp("\\b" + d.c.caseId.toLowerCase() + "\\b").test(ql)) s += 4;
+    if (d.c.kind === "Live store data" && !DATA_INTENT.test(query)) s *= 0.45;
+    return { chunk: d.c, score: s };
+  }).filter((x) => x.score > 0).sort((a, b2) => b2.score - a.score);
+  return scored.slice(0, k);
+}
+
+function kbChunks() {
+  const out = [];
+  KB_DOCS.forEach((d) => d.sections.forEach(([h, t], i) => out.push({ id: `${d.id}-${i + 1}`, docId: d.id, title: `${d.title}: ${h}`, text: t, source: d.source, kind: "Policy document" })));
+  SENSOR_ROWS.forEach((r) => {
+    const st = STORES[r.store];
+    out.push({ id: `data-${r.store}-${r.case}`, docId: "sensor", storeId: r.store, caseId: r.case, title: `Live sensor record ${r.store} ${r.case}`, text: rowToText(r), source: "Store sensor feed (demo snapshot), scored by ColdGuard", kind: "Live store data",
+      keywords: `${st.city} ${st.state} ${r.food} ${scoreCase(r).priority} ${scoreCase(r).outcome} sensor data reading current now status risk` });
+  });
+  return out;
+}
+
+/* ---------------- Uploads: preprocessing ---------------- */
+function chunkUpload(name, text) {
+  const out = [];
+  const clean = text.replace(/\r/g, "").replace(/[ \t]+/g, " ").replace(/(\d+)\s*(?:degrees?\s*)?f\b/gi, "$1 °F");
+  if (/\.csv$/i.test(name)) {
+    const lines = clean.split("\n").filter((l) => l.trim());
+    const head = (lines.shift() || "").split(",").map((h) => h.trim());
+    lines.slice(0, 500).forEach((l, i) => {
+      const cells = l.split(",").map((c) => c.trim());
+      out.push({ id: `up-${name}-${i + 1}`, docId: "upload", title: `${name} row ${i + 1}`, text: head.map((h, j) => `${h}: ${cells[j] ?? ""}`).join("; "), source: `Uploaded file ${name} (session only)`, kind: "Uploaded data" });
+    });
+    return out;
+  }
+  if (/\.json$/i.test(name)) {
+    try { const j = JSON.parse(clean); const arr = Array.isArray(j) ? j : [j]; arr.slice(0, 500).forEach((o, i) => out.push({ id: `up-${name}-${i + 1}`, docId: "upload", title: `${name} item ${i + 1}`, text: JSON.stringify(o).slice(0, 1200), source: `Uploaded file ${name} (session only)`, kind: "Uploaded data" })); return out; } catch (e) { /* fall through to text */ }
+  }
+  const paras = clean.split(/\n\s*\n/).map((p) => p.replace(/\n/g, " ").trim()).filter((p) => p.length > 20);
+  let buf = "", n = 0;
+  const flush = () => { if (buf.trim()) out.push({ id: `up-${name}-${++n}`, docId: "upload", title: `${name} part ${n}`, text: buf.trim(), source: `Uploaded file ${name} (session only)`, kind: "Uploaded data" }); buf = ""; };
+  paras.forEach((p) => { if ((buf + " " + p).length > 900) flush(); buf += (buf ? " " : "") + p; });
+  flush();
+  return out;
+}
+
+/* ---------------- Guardrails ---------------- */
+const INJECTION = /(ignore|disregard|forget)\s+(all\s+|the\s+|your\s+|previous\s+|prior\s+|above\s+)*(instructions|rules|prompt)|system prompt|you are now|jailbreak|developer mode|pretend (to be|you are)/i;
+const DOMAIN = /(temp|°|degree|cool|cold|freez|fridge|refrig|case|rack|compressor|food|dairy|milk|meat|seafood|deli|produce|banana|frozen|ice cream|spoil|discard|safe|haccp|alert|alarm|p1|p2|p3|escalat|defrost|sensor|store|qg-|weather|heat|storm|power|outage|model|xgboost|lightgbm|random forest|catboost|tree|recall|shap|technician|manager|role|team|who|qi groceries|\bqi\b|coldguard|project|hackathon|rag|chatbot|slide|value|problem|solution|gap|ethic|bible|stewardship|first split|neural|member|dhanush|congshan|farukh|jayanth|maintenance|maintain|clean|coil|gasket|calibrat|set ?point|setting|thermostat|humidity|hvac|receiv|fifo|date mark|cross|egg|poultry|bakery|prevent|walk-in|reach-in|machine|equipment|cooler|ethylene|greenchill|refed|waste|statistic|policy|sop|risk|leak|door|energy|predict|data|upload|file)/i;
+
+function preCheck(q, hits) {
+  if (INJECTION.test(q)) return { block: true, reason: "Prompt-injection attempt detected", reply: "I can't change my instructions. I only answer questions about Qi Groceries' refrigeration, food safety and alert procedures, using our approved documents and store data." };
+  const top = hits[0] ? hits[0].score : 0;
+  if (!DOMAIN.test(q) && top < 8) return { block: true, reason: "Out of scope (no relevant company source)", reply: "That's outside what I can help with. I answer questions about Qi Groceries' refrigeration, food temperatures, alerts and store sensor data. Try asking about a store, a case, a food's safe temperature or what to do with an alert." };
+  return { block: false };
+}
+
+function postCheck(answer, sources) {
+  const checks = [];
+  const cited = [...answer.matchAll(/\[S(\d+)\]/g)].map((m) => +m[1]);
+  const bad = cited.filter((n) => n < 1 || n > sources.length);
+  if (!cited.length) checks.push({ ok: false, label: "Citations", detail: "No source was cited. Treat this answer with caution." });
+  else if (bad.length) checks.push({ ok: false, label: "Citations", detail: `Cited a source that was not retrieved: S${bad.join(", S")}` });
+  else checks.push({ ok: true, label: "Citations", detail: `Every claim cites retrieved sources (${[...new Set(cited)].map((n) => "S" + n).join(", ")})` });
+
+  const ctx = sources.map((s) => s.text).join(" ").replace(/\s+/g, " ");
+  const nums = [...answer.matchAll(/(-?\d+(?:\.\d+)?)\s*°\s*F/g)].map((m) => m[1]);
+  const uniq = [...new Set(nums)];
+  const unverified = uniq.filter((n) => !new RegExp("(^|[^\\d.])" + n.replace(".", "\\.") + "\\s*°\\s*F").test(ctx) && !new RegExp("(^|[^\\d.])" + n.replace(".", "\\.") + "(?=[–-]\\-?\\d+(?:\\.\\d+)?\\s*°\\s*F)").test(ctx));
+  if (!uniq.length) checks.push({ ok: true, label: "Number check", detail: "No temperatures stated" });
+  else if (unverified.length) checks.push({ ok: false, label: "Number check", detail: `Not found in sources: ${unverified.map((n) => n + " °F").join(", ")}` });
+  else checks.push({ ok: true, label: "Number check", detail: `All temperatures match sources (${uniq.map((n) => n + " °F").join(", ")})` });
+  return checks;
+}
+
+function needsSafetyNote(q, a) {
+  return /(discard|throw|toss|keep|sell|safe to (eat|sell)|spoil|still good|eat it)/i.test(q + " " + a);
+}
+
+const ROUTES = [
+  { re: /(compressor|rack|refrigerant|leak|coil|condenser|evaporator|fan|gasket|defrost|maintenance|repair|technician|set ?point|setting|thermostat|warranty|equipment|machine|ice machine)/i, who: "Qi Wang", role: "Refrigeration Technician" },
+  { re: /(discard|throw|keep|sell|safe|haccp|spoil|food safety|recall|allergen|health|inspect|date|expire|egg|meat|seafood|dairy|deli|produce)/i, who: "Farukh Ahemad Gesukhan Pathan", role: "Food Safety and QA Manager" },
+  { re: /(sensor|data|feed|upload|file|dashboard|energy|probe|reading)/i, who: "Jayanth Kumar Dadi", role: "Facilities Data Analyst" },
+  { re: /(budget|cost|price|vendor|contract|regional|replace|model|xgboost|lightgbm|machine learning|project|strategy)/i, who: "Dhanush Papani", role: "Regional Operations Manager" },
+];
+function routeHuman(q) { for (const r of ROUTES) if (r.re.test(q)) return r; return { who: "Congshan Yang", role: "Store Manager" }; }
+
+if (typeof module !== "undefined") module.exports = { COMPANY, TEAM, KB_DOCS, STORES, SENSOR_ROWS, scoreCase, rowToText, tokenize, buildIndex, search, kbChunks, chunkUpload, preCheck, postCheck, needsSafetyNote, routeHuman };
+
+</script>
+<script>
+(() => {
+const $ = (s) => document.querySelector(s);
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let chunks = kbChunks();
+let index = buildIndex(chunks);
+const uploads = []; // {name, chunks}
+const history = []; // {role, content}
+const answers = []; // per bot message: {sources, checks, blocked, conf}
+let sample = null, dict = null, tts = null, busy = false, selected = -1, connecting = null;
+
+/* ---------- Persona ---------- */
+const personaSel = $("#persona");
+TEAM.forEach((m) => { const o = document.createElement("option"); o.value = m.persona; o.textContent = `${m.persona} (${m.name.split(" ")[0]})`; personaSel.appendChild(o); });
+personaSel.value = "Store Manager";
+
+/* ---------- Suggestions ---------- */
+const SUGG = [
+  "Which cases need attention in Austin right now?",
+  "What should we do about the rack at QG-214?",
+  "What temperature should a walk-in freezer be set to?",
+  "What preventive maintenance is due every quarter?",
+  "How do we keep seafood from spoiling?",
+  "Is the dairy in case D-14 safe to sell?",
+  "What are the six gaps in our project?",
+  "Why a tree model and not a neural network?",
+  "What is the warranty on our compressors?",
+];
+SUGG.forEach((s) => { const b = document.createElement("button"); b.className = "chip"; b.type = "button"; b.textContent = s; b.onclick = () => ask(s); $("#chips").appendChild(b); });
+
+/* ---------- AI connection ---------- */
+function setStatus(state, text) { const p = $("#aiStatus"); p.querySelector(".dot").className = "dot " + (state || ""); p.lastElementChild.textContent = text; }
+setStatus("", "Connecting to AI…");
+async function serverShim() {
+  // On a self-hosted server (e.g. Render), AI calls go through /api/* so the API key stays on the server.
+  try {
+    const r = await fetch("/api/health", { cache: "no-store" });
+    if (!r.ok) return null;
+    const h = await r.json();
+    if (!h || !h.ai) return null;
+    const post = async (url, body) => {
+      const res = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw { code: j.code || "upstream_error", message: j.message || "AI request failed" };
+      return j;
+    };
+    const f = async (input, opts = {}) => {
+      const messages = typeof input === "string" ? [{ role: "user", content: input }] : input;
+      const j = await post("/api/chat", { messages, tier: opts.modelTier });
+      if (opts.onText) opts.onText({ text: j.text, delta: j.text });
+      return { text: j.text, truncated: false };
+    };
+    f.json = async (prompt) => (await post("/api/json", { prompt: String(prompt) })).value;
+    return f;
+  } catch (e) { return null; }
+}
+function connect() {
+  if (connecting) return connecting;
+  connecting = (async () => {
+    const srv = await serverShim();
+    if (srv) { sample = srv; setStatus("ok", "AI ready · RAG on"); setupMic(); connecting = null; return; }
+    for (let t = 0; t < 60 && !(window.claude && window.claude.use); t++) await new Promise((r) => setTimeout(r, 200));
+    if (window.claude && window.claude.use) {
+      try { sample = await window.claude.use("sample"); } catch (e) { sample = null; }
+      try { dict = await window.claude.use("dictation"); } catch (e) { dict = null; }
+      try { tts = await window.claude.use("tts"); } catch (e) { tts = null; }
+    }
+    if (sample) setStatus("ok", "AI ready · RAG on"); else setStatus("warn", "Retrieval-only mode (AI unavailable in this view)");
+    setupMic();
+    connecting = null;
+  })();
+  return connecting;
+}
+connect();
+
+/* ---------- Tabs ---------- */
+document.querySelectorAll(".tab").forEach((t) => t.onclick = () => showTab(t.dataset.tab));
+function showTab(name) { document.querySelectorAll(".tab").forEach((x) => x.classList.toggle("on", x.dataset.tab === name)); document.querySelectorAll(".pane").forEach((p) => p.classList.toggle("on", p.id === "pane-" + name)); }
+
+/* ---------- Retrieval with store-aware augmentation ---------- */
+const CITY = Object.fromEntries(Object.entries(STORES).flatMap(([id, s]) => [[s.city.toLowerCase(), id], [id.toLowerCase(), id]]));
+const STATE_NAMES = { tx: "texas", ga: "georgia", co: "colorado", mn: "minnesota", nj: "new jersey", oh: "ohio" };
+function storesMentioned(q) {
+  const ql = q.toLowerCase(), out = new Set();
+  Object.entries(CITY).forEach(([k, id]) => { if (ql.includes(k)) out.add(id); });
+  Object.entries(STORES).forEach(([id, s]) => { const st = s.state.toLowerCase(); if (new RegExp("\\b" + st + "\\b").test(ql) && st !== "co" && st !== "oh" || ql.includes(STATE_NAMES[st])) out.add(id); });
+  return [...out];
+}
+function retrieve(q) {
+  let hits = search(index, q, 6);
+  const ids = storesMentioned(q);
+  const extra = [];
+  const dataChunk = (r) => chunks.find((c) => c.storeId === r.store && c.caseId === r.case);
+  if (ids.length) SENSOR_ROWS.filter((r) => ids.includes(r.store)).forEach((r) => extra.push(dataChunk(r)));
+  else if (/(which|any|all|list|every|stores?|most urgent|worst|p1|p2|critical|attention|alerts? (now|today|right now))/i.test(q) && /(store|case|alert|p1|p2|critical|attention|urgent|risk|now|today)/i.test(q))
+    SENSOR_ROWS.filter((r) => scoreCase(r).priority !== "P4").forEach((r) => extra.push(dataChunk(r)));
+  const seen = new Set(hits.map((h) => h.chunk.id));
+  extra.forEach((c) => { if (c && !seen.has(c.id)) { hits.push({ chunk: c, score: 5 }); seen.add(c.id); } });
+  return hits.slice(0, 10);
+}
+
+/* ---------- Prompt ---------- */
+function buildPrompt(q, sources, persona) {
+  const ctx = sources.map((s, i) => `[S${i + 1}] (${s.kind}; ${s.source})\n${s.title}\n${s.text}`).join("\n\n");
+  return `You are ColdGuard, the refrigeration and food-safety assistant for ${COMPANY}, a grocery chain with stores in Texas, Georgia, Colorado, Minnesota, New Jersey and Ohio. You help store teams prevent refrigeration failures, temperature violations and food spoilage.
+
+RULES (follow all of them):
+1. Answer ONLY from the numbered sources below. Do not use outside knowledge for facts, numbers, policies or store data.
+2. Cite every factual sentence with its source number in square brackets, like [S1] or [S2][S4]. Never cite a number that is not listed.
+3. Copy temperatures, times and thresholds exactly as written in the sources (for example "41 °F"). Never invent or estimate a number.
+4. If the sources do not fully contain the answer, do NOT guess or fill gaps from general knowledge. Reply with exactly: "I don't have that in Qi Groceries' approved sources." and then one sentence on what part you could not find. The app will offer to connect the user to a human agent.
+5. Food safety comes first. Never say food is safe to sell or eat; the Food Safety and QA Manager makes the final keep-or-discard decision.
+6. The person asking is the ${persona}. Lead with the actions that role should take, then the reason.
+7. Be concise: at most about 170 words. Use short bullet points for actions. No headings. Plain text with **bold** allowed.
+8. On the very last line, write "FOLLOW-UPS:" followed by three short follow-up questions separated by " | ". Each must be answerable from the sources above.
+
+SOURCES:
+${ctx}
+
+QUESTION from the ${persona}: ${q}`;
+}
+
+/* ---------- Rendering ---------- */
+function md(text) {
+  const lines = esc(text).split(/\n/);
+  let html = "", inList = false;
+  for (let raw of lines) {
+    let l = raw.trim();
+    const isLi = /^[-•*]\s+/.test(l) || /^\d+[.)]\s+/.test(l);
+    if (isLi) { if (!inList) { html += "<ul>"; inList = true; } l = l.replace(/^([-•*]|\d+[.)])\s+/, ""); html += "<li>" + inline(l) + "</li>"; continue; }
+    if (inList) { html += "</ul>"; inList = false; }
+    if (l) html += "<p>" + inline(l) + "</p>";
+  }
+  if (inList) html += "</ul>";
+  return html;
+}
+function stripFU(t) { return String(t).replace(/\n?\s*\**FOLLOW-?UPS?[\s\S]*$/i, ""); }
+function setupMic() {
+  const mic = $("#mic"); if (!dict) { mic.style.display = "none"; return; }
+  mic.style.display = "flex"; let base = "";
+  dict.onPartial(({ text }) => { $("#q").value = (base + " " + text).trim(); autosize(); });
+  dict.onFinal(({ text }) => { base = (base + " " + text).trim(); $("#q").value = base; autosize(); });
+  dict.onState(({ state }) => { mic.classList.toggle("on", state === "listening"); });
+  mic.onclick = () => {
+    if (mic.classList.contains("on")) { dict.stop().catch(() => {}); return; }
+    base = $("#q").value.trim();
+    dict.start().catch((e) => { if (e && e.code === "not_granted") mic.style.display = "none"; });
+  };
+}
+function inline(t) { return t.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\[S(\d+)\]/g, '<span class="cite" data-s="$1">S$1</span>'); }
+
+function addUser(text) { const d = document.createElement("div"); d.className = "m user"; d.textContent = text; $("#msgs").appendChild(d); scroll(); }
+function addBot() { const d = document.createElement("div"); d.className = "m bot"; d.innerHTML = '<span class="typing">Searching Qi Groceries sources…</span>'; $("#msgs").appendChild(d); scroll(); return d; }
+function scroll() { const m = $("#msgs"); m.scrollTop = m.scrollHeight; }
+
+function finishBot(el, i, text) {
+  const a = answers[i];
+  el.dataset.i = i;
+  let html = (a.trace ? '<div class="trace">' + a.trace.map(([t, st]) => `<span class="st ${st === "wait" ? "" : st}">${esc(t)}</span>`).join("") + "</div>" : "") + md(text);
+  if (a.safety) html += '<div class="safety"><b>Food safety rule:</b> When in doubt, throw it out. The Food Safety and QA Manager makes the final keep-or-discard decision and logs it in the HACCP record.</div>';
+  if (a.handoff) { const r = routeHuman(a.q || ""); html += `<div class="handoff" data-h="${i}"><b>Connect to a human agent</b><br>Best person for this: <b>${esc(r.who)}</b>, ${esc(r.role)}.<div class="row"><button class="btn sm" data-connect="${i}" type="button">Connect me</button></div></div>`; }
+  html += '<div class="meta">' + a.checks.map((c) => `<span class="tag ${c.block ? "block" : c.ok ? "ok" : "bad"}">${c.block ? "⛔" : c.ok ? "✓" : "⚠"} ${esc(c.label)}</span>`).join("") +
+    (a.conf ? `<span class="tag info">Retrieval confidence: ${a.conf}</span>` : "") + (a.mode ? `<span class="tag info">${esc(a.mode)}</span>` : "") + "</div>";
+  if (a.followups && a.followups.length) html += '<div class="fu">' + a.followups.map((f) => `<button type="button" data-fu="${esc(f)}">${esc(f)}</button>`).join("") + "</div>";
+  html += `<div class="tools">${tts ? '<button type="button" data-say>🔊 Listen</button>' : ""}<button type="button" data-copy>Copy answer</button></div>`;
+  el.innerHTML = html;
+  el.dataset.plain = text.replace(/\[S\d+\]/g, "").replace(/\*\*/g, "");
+  el.onclick = (e) => {
+    const fu = e.target.closest("[data-fu]"); if (fu) { e.stopPropagation(); ask(fu.dataset.fu); return; }
+    const sy = e.target.closest("[data-say]"); if (sy) { e.stopPropagation(); if (tts) { if (sy.dataset.on) { tts.stop(); return; } sy.dataset.on = "1"; sy.textContent = "■ Stop"; tts.speak(el.dataset.plain.slice(0, 1990)).catch(() => {}).finally(() => { delete sy.dataset.on; sy.textContent = "🔊 Listen"; }); } return; }
+    const cp = e.target.closest("[data-copy]"); if (cp) { e.stopPropagation(); navigator.clipboard && navigator.clipboard.writeText(el.dataset.plain).then(() => { cp.textContent = "Copied"; }).catch(() => { cp.textContent = "Copy blocked"; }); return; }
+    const b = e.target.closest("[data-connect]");
+    if (b) { e.stopPropagation(); openTicket(b.closest(".handoff"), a.q || ""); return; }
+    if (e.target.closest(".handoff")) return;
+    const c = e.target.closest(".cite"); select(i, c ? +c.dataset.s : null);
+  };
+  select(i, null);
+  scroll();
+}
+
+function select(i, hl) {
+  selected = i;
+  document.querySelectorAll(".m.bot").forEach((m) => m.classList.toggle("sel", +m.dataset.i === i));
+  const a = answers[i]; if (!a) return;
+  let h = "<h3>Accuracy checks</h3>";
+  h += a.checks.map((c) => `<div class="check"><span class="ic ${c.block ? "block" : c.ok ? "ok" : "bad"}">${c.block ? "!" : c.ok ? "✓" : "!"}</span><div><b>${esc(c.label)}</b><br><span style="color:#5B7A93">${esc(c.detail)}</span></div></div>`).join("");
+  h += `<h3 style="margin-top:16px">Retrieved sources (${a.sources.length})</h3>`;
+  if (!a.sources.length) h += '<p class="empty">No sources were used because a guardrail stopped the question before retrieval or generation.</p>';
+  h += a.sources.map((s, j) => `<div class="src${hl === j + 1 ? " hl" : ""}" id="src-${j + 1}"><div class="top"><span class="n">S${j + 1}</span><span class="k">${esc(s.kind)}${s._score !== undefined ? " · relevance " + s._score.toFixed(1) : ""}</span></div><div class="t">${esc(s.title)}</div><div class="x">${esc(s.text)}</div><div class="s">${esc(s.source)}</div></div>`).join("");
+  $("#pane-sources").innerHTML = h;
+  showTab("sources");
+  if (hl) { const el = document.getElementById("src-" + hl); if (el) el.scrollIntoView({ block: "center", behavior: "smooth" }); }
+}
+
+/* ---------- Ask ---------- */
+async function ask(q) {
+  q = q.trim(); if (!q || busy) return;
+  busy = true; $("#send").disabled = true; $("#q").value = ""; autosize();
+  addUser(q);
+  const el = addBot();
+  if (!sample && window.claude && window.claude.use) await connect();
+  const i = answers.length;
+  const persona = personaSel.value;
+  const hits = retrieve(q);
+  const pre = preCheck(q, hits);
+  if (pre.block) {
+    answers.push({ sources: [], checks: [{ ok: false, block: true, label: "Guardrail", detail: pre.reason }], mode: "Blocked before generation", handoff: /Out of scope/.test(pre.reason), q });
+    finishBot(el, i, pre.reply);
+    history.push({ role: "user", content: q }, { role: "assistant", content: pre.reply });
+    busy = false; $("#send").disabled = false; return;
+  }
+  const trace = [["Guardrails", "done"], [`Retrieved ${hits.length} (BM25)`, "done"], ["AI re-rank", "wait"], ["Generate", "wait"], ["Verify", "wait"]];
+  const drawTrace = (body) => { el.innerHTML = '<div class="trace">' + trace.map(([t, st]) => `<span class="st ${st === "wait" ? "" : st}">${esc(t)}</span>`).join("") + "</div>" + (body || ""); scroll(); };
+  let sources = hits.map((h) => Object.assign({}, h.chunk, { _score: h.score }));
+  const top = hits[0] ? hits[0].score : 0;
+  let rerankNote = "";
+  if (sample && $("#rerank").checked && top >= 2.5 && sources.length > 2) {
+    trace[2] = ["AI re-ranking…", "run"]; drawTrace('<span class="typing">Choosing the most relevant passages…</span>');
+    try {
+      const list = sources.map((c, j) => `${j + 1}. ${c.title}: ${c.text.slice(0, 260)}`).join("\n");
+      const r = await sample.json(`You are a relevance judge for a grocery refrigeration and food-safety assistant. Question: "${q}"\n\nCandidate passages:\n${list}\n\nReturn JSON exactly like {"keep":[3,1]} listing the numbers of the passages that help answer the question, most useful first, at most 6. Return {"keep":[]} if none help.`, { modelTier: "quick", cache: false });
+      const keep = r && Array.isArray(r.keep) ? [...new Set(r.keep.map(Number).filter((n) => n >= 1 && n <= sources.length))] : null;
+      if (keep && keep.length) { const before = sources.length; sources = keep.map((n) => sources[n - 1]); trace[2] = [`AI re-ranked ${before} → ${sources.length}`, "done"]; rerankNote = `AI re-ranker kept ${sources.length} of ${before} passages`; }
+      else if (keep && !keep.length) { trace[2] = ["AI re-rank: none relevant", "fail"]; rerankNote = "none"; }
+      else trace[2] = ["AI re-rank skipped", "skip"];
+    } catch (e) { trace[2] = ["AI re-rank skipped", "skip"]; }
+  } else trace[2] = ["AI re-rank off", "skip"];
+  if (rerankNote === "none") {
+    const reply = "I couldn't find anything in Qi Groceries' approved sources that answers this, so I won't guess. I can connect you to a person on the team.";
+    answers.push({ sources: [], checks: [{ ok: true, label: "No-guess rule", detail: "The AI relevance judge found no passage that answers the question; human handoff offered" }], mode: "Human handoff", handoff: true, q, trace: trace.slice(0, 3) });
+    finishBot(el, i, reply);
+    history.push({ role: "user", content: q }, { role: "assistant", content: reply });
+    busy = false; $("#send").disabled = false; return;
+  }
+  if (top < 2.5) {
+    const reply = "I don't have that in Qi Groceries' approved sources, so I won't guess. I can connect you to a person on the team who can answer it.";
+    answers.push({ sources: sources.slice(0, 3), checks: [{ ok: true, label: "No-guess rule", detail: `Retrieval confidence too low (top relevance ${top.toFixed(1)} < 2.5): answer withheld and human handoff offered` }], mode: "Human handoff", handoff: true, q, trace: [["Guardrails", "done"], [`Retrieved ${hits.length} (BM25)`, "done"], ["Confidence too low", "fail"]] });
+    finishBot(el, i, reply);
+    history.push({ role: "user", content: q }, { role: "assistant", content: reply });
+    busy = false; $("#send").disabled = false; return;
+  }
+  const conf = top >= 6 ? "High" : top >= 3 ? "Medium" : "Low";
+  let text = "", mode = "";
+  if (sample) {
+    try {
+      trace[3] = ["Generating…", "run"]; drawTrace('<span class="typing">Writing a cited answer…</span>');
+      const msgs = history.slice(-6).concat([{ role: "user", content: buildPrompt(q, sources, persona) }]);
+      const res = await sample(msgs, { cache: false, modelTier: "default", onText: ({ text: t }) => { drawTrace(md(stripFU(t)) || '<span class="typing">Thinking…</span>'); } });
+      text = (res && res.text) || ""; mode = "AI answer grounded in retrieved sources"; trace[3] = ["Generated", "done"];
+    } catch (e) {
+      if (e && e.code === "not_granted") { sample = null; setStatus("warn", "Retrieval-only mode (AI not allowed)"); }
+      else if (e && e.code === "rate_limited") setStatus("warn", "AI busy, try again shortly");
+      text = ""; mode = "";
+    }
+  }
+  if (!text) {
+    trace[3] = ["Retrieval-only", "skip"];
+    mode = "Retrieval-only answer (AI unavailable)";
+    text = sources.length ? "Here are the most relevant passages from Qi Groceries' approved sources:\n" + sources.slice(0, 3).map((s, j) => `- **${s.title}:** ${s.text} [S${j + 1}]`).join("\n")
+      : "I don't have that in Qi Groceries' approved sources.";
+  }
+  const fuMatch = text.match(/\n?\s*\**FOLLOW-?UPS?:?\**\s*:?(.*)$/is);
+  const followups = fuMatch ? fuMatch[1].split("|").map((x) => x.replace(/^[\s\-*\d.]+|\s+$/g, "")).filter((x) => x.length > 5).slice(0, 3) : [];
+  text = stripFU(text).trim();
+  const checks = postCheck(text, sources);
+  checks.push({ ok: conf !== "Low", label: "Retrieval confidence", detail: conf === "Low" ? "Weak match with company sources; verify with a manager" : `${conf} (top relevance ${top.toFixed(1)})` });
+  checks.push({ ok: true, label: "Topic and injection guardrails", detail: "Passed: question is about Qi Groceries refrigeration and food safety" });
+  const declined = /don't have that in Qi Groceries' approved sources/i.test(text);
+  const numFail = checks.some((c) => c.label === "Number check" && !c.ok);
+  if (declined) { checks.splice(0, 1, { ok: true, label: "Citations", detail: "Not needed: the answer says the information is not in the approved sources" }); checks.push({ ok: true, label: "No-guess rule", detail: "The model said the answer is not in the approved sources, so a human handoff is offered" }); }
+  if (numFail) checks.push({ ok: false, label: "Human review", detail: "A number could not be verified against sources; human handoff offered" });
+  const safety = !declined && needsSafetyNote(q, text);
+  if (safety) checks.push({ ok: true, label: "Food safety rule", detail: "Keep-or-discard question: human approval reminder added" });
+  trace[4] = [checks.every((c) => c.ok) ? "Verified" : "Verified with warnings", checks.every((c) => c.ok) ? "done" : "fail"];
+  if (rerankNote) checks.push({ ok: true, label: "AI re-rank", detail: rerankNote });
+  answers.push({ sources, checks, conf, mode, safety, handoff: declined || numFail || conf === "Low", q, trace, followups: declined ? [] : followups });
+  finishBot(el, i, text);
+  history.push({ role: "user", content: q }, { role: "assistant", content: text });
+  busy = false; $("#send").disabled = false; $("#q").focus();
+}
+
+let ticketNo = 1040;
+function openTicket(box, q) {
+  const r = routeHuman(q);
+  box.innerHTML = `<b>Connect to a human agent</b><br>Routing to <b>${esc(r.who)}</b>, ${esc(r.role)}. Add any details (store, case, what you see):<textarea aria-label="Details for the human agent">${esc(q)}</textarea><div class="row"><button class="btn sm" type="button" data-send>Send to ${esc(r.who.split(" ")[0])}</button></div>`;
+  box.querySelector("[data-send]").onclick = (e) => {
+    e.stopPropagation();
+    const details = box.querySelector("textarea").value.trim() || q;
+    const id = "QG-T-" + (++ticketNo);
+    box.innerHTML = `<b>Handoff ticket ${id} created</b><div class="ticket">Assigned to ${esc(r.who)} (${esc(r.role)}). Summary: "${esc(details.slice(0, 160))}". Expected reply: within 15 minutes for food-safety or P1 issues, otherwise within 1 business day.</div><div style="font-size:12px;color:#5B7A93;margin-top:6px">Demo: the handoff is simulated. In production it would open a ticket in Qi Groceries' service desk and message the person on Teams or SMS.</div>`;
+  };
+}
+$("#humanBtn").onclick = () => {
+  const d = document.createElement("div"); d.className = "m bot"; d.style.cursor = "default";
+  d.innerHTML = `<div class="handoff" style="margin-top:0"><b>Talk to a human</b><br>Describe what you need, and ColdGuard will route it to the right person on the team.<textarea placeholder="e.g. Walk-in freezer at QG-412 is making a grinding noise"></textarea><div class="row"><button class="btn sm" type="button">Route my request</button></div></div>`;
+  $("#msgs").appendChild(d); scroll();
+  const box = d.querySelector(".handoff");
+  box.querySelector("button").onclick = () => { const t = box.querySelector("textarea").value.trim(); if (!t) { box.querySelector("textarea").focus(); return; } openTicket(box, t); box.querySelector("[data-send]").click(); };
+};
+
+$("#form").onsubmit = (e) => { e.preventDefault(); ask($("#q").value); };
+$("#q").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); ask($("#q").value); } });
+function autosize() { const t = $("#q"); t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight, 140) + "px"; }
+$("#q").addEventListener("input", autosize);
+
+/* ---------- Live store data ---------- */
+let filter = "Needs action";
+function renderData() {
+  const rows = SENSOR_ROWS.map((r) => ({ r, s: scoreCase(r) }));
+  const counts = { P1: 0, P2: 0, P3: 0 }; rows.forEach(({ s }) => { if (counts[s.priority] !== undefined) counts[s.priority]++; });
+  const f = ["Needs action", "All", "P1", "P2", "P3"];
+  let h = `<h3>Sensor snapshot · scored by the decision tree</h3><div class="filters">${f.map((x) => `<button class="${x === filter ? "on" : ""}" data-f="${x}">${x}${counts[x] !== undefined ? " (" + counts[x] + ")" : ""}</button>`).join("")}</div>`;
+  const show = rows.filter(({ s }) => filter === "All" ? true : filter === "Needs action" ? s.priority !== "P4" : s.priority === filter)
+    .sort((a, b) => ["P1", "P2", "Hold", "P3", "P4"].indexOf(a.s.priority) - ["P1", "P2", "Hold", "P3", "P4"].indexOf(b.s.priority));
+  h += `<table><thead><tr><th>Priority</th><th>Store / case</th><th>Reading</th><th>Action</th><th></th></tr></thead><tbody>` +
+    show.map(({ r, s }) => `<tr><td><span class="pri ${s.priority}">${s.priority}</span></td><td><b>${r.store}</b> ${r.case}<br><span style="color:#5B7A93">${esc(STORES[r.store].city)}, ${r.store && STORES[r.store].state} · ${esc(r.food)}</span></td><td>${r.temp} °F<br><span style="color:#5B7A93">risk ${r.risk.toFixed(2)}</span></td><td>${esc(s.outcome)}<br><span style="color:#5B7A93">${esc(s.action)}</span></td><td><button class="ask" data-q="What should we do about ${r.store} case ${r.case}?">Ask</button></td></tr>`).join("") + "</tbody></table>";
+  h += `<p class="note">Demo sensor feed for six stores. Model risk scores come from the Random Forest / XGBoost / LightGBM ensemble. Priorities come from the R.2 decision tree: sensor check → defrost → food above limit → risk ≥ 0.7 → risk 0.4–0.7 with weather.</p>`;
+  $("#pane-data").innerHTML = h;
+  $("#pane-data").querySelectorAll("[data-f]").forEach((b) => b.onclick = () => { filter = b.dataset.f; renderData(); });
+  $("#pane-data").querySelectorAll("[data-q]").forEach((b) => b.onclick = () => ask(b.dataset.q));
+}
+
+/* ---------- Knowledge base + uploads ---------- */
+function renderKB() {
+  let h = `<h3>Add your own data</h3><div class="drop" id="drop">Drop .txt, .md, .csv or .json files here, or click to choose.<br><span style="font-size:12px">Files stay in this browser session only and are searched alongside company sources.</span></div>`;
+  if (uploads.length) h += "<h3>Uploaded this session</h3>" + uploads.map((u, i) => `<div class="doc"><div><div class="t">${esc(u.name)}</div><div class="s">${u.chunks.length} chunks · temporary, in memory</div></div><button class="rm" data-rm="${i}">Remove</button></div>`).join("");
+  h += "<h3>Company sources</h3>" + KB_DOCS.map((d) => `<div class="doc"><div><div class="t">${esc(d.title)}</div><div class="s">${d.sections.length} sections · ${esc(d.source)}</div></div></div>`).join("") +
+    `<div class="doc"><div><div class="t">Store sensor feed snapshot</div><div class="s">${SENSOR_ROWS.length} live records from ${Object.keys(STORES).length} stores · demo feed, scored by ColdGuard</div></div></div>`;
+  $("#pane-kb").innerHTML = h;
+  const drop = $("#drop");
+  drop.onclick = () => $("#file").click();
+  drop.ondragover = (e) => { e.preventDefault(); drop.classList.add("over"); };
+  drop.ondragleave = () => drop.classList.remove("over");
+  drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove("over"); addFiles(e.dataTransfer.files); };
+  $("#pane-kb").querySelectorAll("[data-rm]").forEach((b) => b.onclick = () => { uploads.splice(+b.dataset.rm, 1); rebuild(); renderKB(); });
+}
+function rebuild() { chunks = kbChunks().concat(...uploads.map((u) => u.chunks)); index = buildIndex(chunks); }
+async function addFiles(list) {
+  for (const f of list) {
+    if (!/\.(txt|md|csv|json)$/i.test(f.name)) { note(`Skipped ${f.name}: only .txt, .md, .csv and .json are supported.`); continue; }
+    if (f.size > 2_000_000) { note(`Skipped ${f.name}: larger than 2 MB.`); continue; }
+    let text = "";
+    try { text = f.text ? await f.text() : await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = rej; r.readAsText(f); }); }
+    catch (e) { note(`Could not read ${f.name}.`); continue; }
+    const c = chunkUpload(f.name, text);
+    if (!c.length) { note(`No readable text found in ${f.name}.`); continue; }
+    uploads.push({ name: f.name, chunks: c });
+    note(`Added ${f.name} (${c.length} chunks) to the knowledge base for this session. Ask a question about it.`);
+  }
+  rebuild(); renderKB(); showTab("kb");
+}
+function note(t) { const d = document.createElement("div"); d.className = "m bot"; d.style.cursor = "default"; d.innerHTML = `<span class="tag info">Knowledge base</span> ${esc(t)}`; $("#msgs").appendChild(d); scroll(); }
+$("#upBtn").onclick = () => $("#file").click();
+$("#file").onchange = (e) => { addFiles(e.target.files); e.target.value = ""; };
+
+/* ---------- About ---------- */
+function renderAbout() {
+  $("#pane-about").innerHTML = `<h3>Group 4</h3><div class="team">${TEAM.map((m) => `<div class="member"><b>${esc(m.name)}</b><div>${esc(m.role)}</div></div>`).join("")}</div>
+  <h3>How ColdGuard works</h3><dl class="how">
+  <dt>Use case</dt><dd>Store teams at Qi Groceries ask about coolers, freezers and food temperatures, and get grounded, cited answers and actions instead of raw alarms.</dd>
+  <dt>Data sources</dt><dd>Company policy documents (based on the FDA Food Code 2026, USDA Handbook 66 and USDA power-outage guidance), refrigeration guides, the alert SOP, the AI model card, a store sensor feed snapshot, and files you upload.</dd>
+  <dt>Preprocessing</dt><dd>Documents are split into sections; sensor rows are turned into readable records and scored by the decision tree; text is lowercased, stop words removed, words stemmed, synonyms added (milk → dairy), and units standardised to °F.</dd>
+  <dt>Retrieval</dt><dd>BM25 keyword ranking over all chunks, plus every record for any store you name. The top sources are numbered S1, S2… and passed to the model.</dd>
+  <dt>Generation</dt><dd>Claude writes the answer using only those sources, citing each fact, tailored to the selected role.</dd>
+  <dt>Storage</dt><dd>Everything is held in memory in your browser for this session. Uploads are temporary and never leave the page.</dd>
+  <dt>Validation</dt><dd>Before generation: prompt-injection and off-topic guardrails. After generation: citation check, temperature fact check against the sources, retrieval confidence, and a food-safety rule that keeps a human in charge of keep-or-discard decisions.</dd>
+  <dt>No guessing: human handoff</dt><dd>If retrieval confidence is low, the model says the answer is not in the sources, or a number cannot be verified, ColdGuard offers to connect you to the right team member and creates a handoff ticket.</dd></dl>
+  <p class="note">Store sensor readings come from a demo feed for six stores. Food temperature limits follow the FDA Food Code 2026 and USDA guidance.</p>`;
+}
+
+renderData(); renderKB(); renderAbout();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: coldguard
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_MODEL
+        value: claude-sonnet-5-5
+      - key: ANTHROPIC_QUICK_MODEL
+        value: claude-haiku-5-5
+      - key: RATE_LIMIT_PER_10_MIN
+        value: "40"

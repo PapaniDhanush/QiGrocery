@@ -1,0 +1,9 @@
+{
+  "name": "coldguard",
+  "version": "1.0.0",
+  "description": "ColdGuard RAG chatbot for Qi Groceries (AIML-501 Group 4)",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" },
+  "license": "MIT"
+}
