@@ -487,7 +487,7 @@ function postCheck(answer, sources) {
 }
 
 function needsSafetyNote(q, a) {
-  return /(discard|throw|toss|keep|sell|safe to (eat|sell)|spoil|still good|eat it)/i.test(q + " " + a);
+  return /(discard|throw (it|them)? ?(out|away)|toss|keep or|still (good|safe)|safe to (eat|sell|serve)|sell it|spoiled|eat it)/i.test(q);
 }
 
 const ROUTES = [
